@@ -44,8 +44,9 @@ SMS/USSD is a simulator. Emergency support is referral guidance. Financial,
 medical, legal, abuse, and safety decisions are not delegated to remote AI.
 Power Credits are noncash donated resources reviewed by people.
 
-The optional OpenAI US/English routing pilot is configured but disabled: the
-existing account returned exhausted API credits on 2026-11-10. Stripe access is
+Alibaba Cloud Model Studio is the selected optional provider, disabled until
+regular API access is verified. Token/Coding Plan credits cannot back this public
+API. The earlier OpenAI pilot also remains off. Stripe access is
 sandbox-only and ExoClick hostname approval is not verified. Neither payments nor
 third-party ads are active. Bundled help packs remain prototypes pending human
 review and signing; they are not a verified local-service directory.

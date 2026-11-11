@@ -18,6 +18,37 @@ test("startup flags do not claim configured AI or Stripe without provider creden
   assert.equal(status.body.readiness.ai.verifiedLive, false);
 });
 
+test("Alibaba requires explicit model, reviewed cost, regional endpoint and a DashScope or explicit key", async () => {
+  const base = { FAITHAI_AI_PROVIDER: "alibaba", FAITHAI_AI_ENABLED: "true", FAITHAI_AI_ENDPOINT: "https://llm-example.us-east-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions", FAITHAI_AI_MODEL: "reviewed-test-model", FAITHAI_AI_MAX_CALL_USD: "0.005", DASHSCOPE_API_KEY: "test-dashscope-only" };
+  assert.equal(createProviderRuntime(base).configured.ai, true);
+  for (const missing of ["FAITHAI_AI_ENDPOINT", "FAITHAI_AI_MODEL", "FAITHAI_AI_MAX_CALL_USD", "DASHSCOPE_API_KEY"]) {
+    const env = { ...base, [missing]: "", OPENAI_API_KEY: "must-not-be-used" };
+    const state = createApiState({ env, ...createProviderRuntime(env) });
+    const status = await handleApiRequest(state, req("GET", "/v1/capabilities"));
+    assert.equal(status.body.providers.ai, false);
+    assert.deepEqual(status.body.aiProvider, { kind: "alibaba", label: "Alibaba Cloud Model Studio" });
+    assert.equal(JSON.stringify(status).includes("test-dashscope-only"), false);
+  }
+  assert.equal(createProviderRuntime({ ...base, DASHSCOPE_API_KEY: "", FAITHAI_AI_API_KEY: "test-explicit-only" }).configured.ai, true);
+  assert.equal(createProviderRuntime({ ...base, DASHSCOPE_API_KEY: "sk-sp-test-coding-plan" }).configured.ai, false);
+  assert.equal(createProviderRuntime({ ...base, FAITHAI_AI_PROVIDER: "unknown" }).configured.ai, false);
+  for (const endpoint of ["https://untrusted.example/compatible-mode/v1/chat/completions", "https://dashscope-intl.aliyuncs.com.untrusted.example/compatible-mode/v1/chat/completions", "http://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", "https://dashscope-intl.aliyuncs.com/v1/chat/completions", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions?key=no", "https://dashscope-intl.aliyuncs.com:8443/compatible-mode/v1/chat/completions", "https://trial.us-east-1.maas.aliyuncs.com/compatible-mode/v1/chat/completions"]) {
+    assert.equal(createProviderRuntime({ ...base, FAITHAI_AI_ENDPOINT: endpoint }).configured.ai, false);
+  }
+  for (const host of ["dashscope.aliyuncs.com", "dashscope-intl.aliyuncs.com", "cn-hongkong.dashscope.aliyuncs.com", ...["cn-beijing", "ap-southeast-1", "us-east-1", "eu-central-1", "ap-northeast-1", "cn-hongkong"].map((region) => `llm-example.${region}.maas.aliyuncs.com`)]) {
+    assert.equal(createProviderRuntime({ ...base, FAITHAI_AI_ENDPOINT: `https://${host}/compatible-mode/v1/chat/completions` }).configured.ai, true);
+  }
+});
+
+test("Alibaba sends only supported bounded inference parameters and reuses response validation", async () => {
+  let sent;
+  const runtime = createProviderRuntime({ FAITHAI_AI_PROVIDER: "alibaba", FAITHAI_AI_ENDPOINT: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions", FAITHAI_AI_MODEL: "reviewed-test-model", FAITHAI_AI_MAX_CALL_USD: "0.005", FAITHAI_AI_MAX_OUTPUT_TOKENS: "9999", DASHSCOPE_API_KEY: "test-dashscope-only" }, { fetcher: async (_url, options) => { sent = options; return { ok: true, json: async () => ({ choices: [{ message: { content: '{"intent":"learning","confidence":0.8}' } }] }) }; } });
+  const result = await runtime.aiProvider.interpret({ approvedUtterance: "general learning", locale: "en", territory: "us", scene: "listen" });
+  assert.equal(result.intent, "learning");
+  assert.deepEqual(JSON.parse(sent.body), { model: "reviewed-test-model", temperature: 0.1, max_tokens: 512, enable_thinking: false, messages: [{ role: "system", content: JSON.parse(sent.body).messages[0].content }, { role: "user", content: "general learning" }] });
+  assert.equal(sent.headers.authorization, "Bearer test-dashscope-only");
+});
+
 test("health alias returns JSON health instead of a successful application shell", async () => {
   const state = createApiState({ databaseRequired: true });
   assert.deepEqual(await handleApiRequest(state, req("GET", "/health")), await handleApiRequest(state, req("GET", "/healthz")));

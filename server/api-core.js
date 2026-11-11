@@ -9,7 +9,7 @@ import { paymentLedgerType } from "../src/payment-provider.js";
 const ROUTES = new Set(["/healthz", "/v1/packs", "/v1/resources", "/v1/circles/join", "/v1/challenges", "/v1/progress", "/v1/signals", "/v1/ads/contextual", "/v1/sync/events", "/v1/power-credits", "/v1/integrations/status", "/v1/ai/interpret", "/v1/emergency/resources", "/v1/content/sources", "/v1/payments/create-link", "/v1/payments/webhook"]);
 const PUBLIC_WRITE_ROUTES = new Set(["/v1/sync/events", "/v1/power-credits", "/v1/circles/join", "/v1/progress"]);
 
-export function createApiState({ env = {}, emergencyResources = [], contentSources = [], aiProvider = null, paymentAdapters = {}, paymentWebhookVerifier = null, paymentEventMapper = null, configured = null, maxCallUsd = null, store = null, databaseRequired = false } = {}) {
+export function createApiState({ env = {}, emergencyResources = [], contentSources = [], aiProvider = null, aiProviderInfo = { kind: "openai-compatible", label: "Remote AI provider" }, paymentAdapters = {}, paymentWebhookVerifier = null, paymentEventMapper = null, configured = null, maxCallUsd = null, store = null, databaseRequired = false } = {}) {
   const config = createIntegrationConfig(env);
   const production = env.NODE_ENV === "production" || ["production", "public", "vps"].includes(String(config.environment).toLowerCase());
   const publicWritesEnabled = env.FAITHAI_PUBLIC_WRITES_ENABLED === undefined ? !production : /^(true|1|on|yes|enabled)$/i.test(String(env.FAITHAI_PUBLIC_WRITES_ENABLED));
@@ -35,6 +35,7 @@ export function createApiState({ env = {}, emergencyResources = [], contentSourc
     paymentWebhookVerifier,
     paymentEventMapper,
     providerConfiguration: configured,
+    aiProviderInfo,
     store,
     databaseRequired,
     aiGateway: createAiGateway({ config, provider: aiProvider, ...(store?.reserveAiBudget ? { budget: { reserve: (input) => store.reserveAiBudget(input) } } : {}) }),
@@ -92,7 +93,7 @@ export async function handleApiRequest(state, request, now = Date.now()) {
 
   if (request.method === "GET" && request.path === "/v1/integrations/status") {
     const providerHealth = state.store?.providerStatus ? await state.store.providerStatus() : [];
-    return response(200, { ...publicIntegrationStatus(state.config), providerHealth, readiness: Object.fromEntries(Object.entries(state.config.providers).map(([name, enabled]) => [name, { enabled, configured: state.providerConfiguration?.[name] ?? null, verifiedLive: false }])), aiBudget: state.store?.reserveAiBudget ? "durable-conservative-reservation" : "memory-only", publicWritesEnabled: state.publicWritesEnabled });
+    return response(200, { ...publicIntegrationStatus(state.config), aiProvider: state.aiProviderInfo, providerHealth, readiness: Object.fromEntries(Object.entries(state.config.providers).map(([name, enabled]) => [name, { enabled, configured: state.providerConfiguration?.[name] ?? null, verifiedLive: false }])), aiBudget: state.store?.reserveAiBudget ? "durable-conservative-reservation" : "memory-only", publicWritesEnabled: state.publicWritesEnabled });
   }
 
   if (request.method === "GET" && request.path === "/v1/packs") {

@@ -1,0 +1,9 @@
+--- a/index.html
++++ b/index.html
+@@ -27,5 +27,6 @@
+       <h2>Bisexual-led. Justice across communities.</h2>
+       <p class="note">Our next chapter is taking shape. The site, archive, and connection tools are in private preview.</p>
++      <p><a href="https://app.binetusa.org/help/">BiNet Help (private beta)</a></p>
+       <div class="lanes" aria-label="Projects in development"><span>BiNet</span><span>biDTF</span><span>ACTS</span></div>
+     </section>
+   </main>

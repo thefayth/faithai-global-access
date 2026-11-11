@@ -16,7 +16,7 @@ const artifacts = await files(directory);
 const manifest = {
   version: '20261110Tlaunch', sourceRepository: 'https://github.com/thefayth/faithai-global-access', sourceCommit: commit, variant,
   publishedDate: '2026-11-10', buildChecksum: createHash('sha256').update(JSON.stringify(artifacts)).digest('hex'),
-  capabilities: { localGuide: 'available', localJourney: 'available', offlineGames: 'available-English', ai: 'configured-disabled-credit-exhausted', ads: 'disabled-awaiting-property-review', payments: 'not-connected-live', smsUssd: 'simulated', emergency: 'guidance-only-no-live-directory', publicWrites: 'disabled-awaiting-reviewed-workflows' },
+  capabilities: { localGuide: 'available', localJourney: 'available', offlineGames: 'available-English', ai: 'selected-alibaba-disabled-no-regular-api-access', ads: 'disabled-awaiting-property-review', payments: 'not-connected-live', smsUssd: 'simulated', emergency: 'guidance-only-no-live-directory', publicWrites: 'disabled-awaiting-reviewed-workflows' },
   content: { bundled: 'prototype-pending-human-review-and-signing', productionPacks: [] }, artifacts,
 };
 await writeFile(path.join(directory, 'release.json'), JSON.stringify(manifest, null, 2) + '\n');

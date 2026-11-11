@@ -455,7 +455,7 @@ export function TerminalWalkthrough({ onClassic, onOpenClassic, active = true, o
       ? [["1", copy.understand], ["2", copy.notNow]]
       : scene.options;
   const displayMessage = remotePreview
-    ? `OPTIONAL ONLINE AI / US PILOT\n\nThe local guide is unsure. This optional English pilot is for use in the United States. Send only the text below to the configured AI provider to choose a help lane? No audio, journey history, saved cards or location will be sent. FAITHAI does not store this text. The provider receives this request.\n\nTEXT TO SEND:\n${remotePreview.utterance}\n\n[1] chooses the US pilot and approves this request only. [2] keeps everything local. You do not need AI to continue.`
+    ? `OPTIONAL ONLINE AI / US PILOT\n\nThe local guide is unsure. This optional English pilot is for use in the United States. Send only the text below to ${remoteRef.current.providerLabel} to choose a help lane? No audio, journey history, saved cards or location will be sent. FAITHAI does not store this text. The provider receives this request.\n\nTEXT TO SEND:\n${remotePreview.utterance}\n\n[1] chooses the US pilot and approves this request only. [2] keeps everything local. You do not need AI to continue.`
     : languageMenu
     ? `L / LANGUAGE\n\n${LANGUAGES.map((language) => `[${language.number}] ${language.label}`).join("  ")}`
     : speechDisclosure

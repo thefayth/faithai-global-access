@@ -11,6 +11,12 @@ function httpsUrl(value) {
   catch { return null; }
 }
 
+function alibabaEndpointAllowed(url) {
+  if (!url || url.port || url.search || url.hash || url.pathname !== "/compatible-mode/v1/chat/completions") return false;
+  const legacyHosts = ["dashscope.aliyuncs.com", "dashscope-intl.aliyuncs.com", "cn-hongkong.dashscope.aliyuncs.com"];
+  return legacyHosts.includes(url.hostname) || /^(?!trial\.)[a-z0-9][a-z0-9-]*\.(?:cn-beijing|ap-southeast-1|us-east-1|eu-central-1|ap-northeast-1|cn-hongkong)\.maas\.aliyuncs\.com$/.test(url.hostname);
+}
+
 export function verifyStripeSignature(payload, header, secret, now = Date.now(), toleranceSeconds = 300) {
   if (!secret || typeof payload !== "string") return false;
   const parts = String(header || "").split(",").map((part) => part.split("="));
@@ -31,9 +37,13 @@ export function stripeRevenueEvent(event) {
 export function createProviderRuntime(env = {}, { fetcher = fetch, now = () => Date.now() } = {}) {
   const paymentAdapters = {};
   const aiEndpoint = httpsUrl(env.FAITHAI_AI_ENDPOINT);
+  const providerKind = String(env.FAITHAI_AI_PROVIDER || "openai-compatible").trim().toLowerCase();
+  const supportedKind = ["alibaba", "openai", "openai-compatible"].includes(providerKind);
+  const aiKey = String(env.FAITHAI_AI_API_KEY || (providerKind === "alibaba" ? env.DASHSCOPE_API_KEY : "") || "").trim();
+  const aiProviderInfo = providerKind === "alibaba" ? { kind: "alibaba", label: "Alibaba Cloud Model Studio" } : providerKind === "openai" || aiEndpoint?.hostname === "api.openai.com" ? { kind: "openai", label: "OpenAI" } : { kind: "openai-compatible", label: "Remote AI provider" };
   const maxCallUsd = Number(env.FAITHAI_AI_MAX_CALL_USD);
-  const aiConfigured = Boolean(aiEndpoint && env.FAITHAI_AI_API_KEY && env.FAITHAI_AI_MODEL && Number.isFinite(maxCallUsd) && maxCallUsd > 0);
-  const aiProvider = aiConfigured ? createOpenAiCompatibleProvider({ endpoint: aiEndpoint.href, apiKey: env.FAITHAI_AI_API_KEY, model: env.FAITHAI_AI_MODEL, fetcher, maxOutputTokens: Number(env.FAITHAI_AI_MAX_OUTPUT_TOKENS || 256) }) : null;
+  const aiConfigured = Boolean(supportedKind && aiEndpoint && aiKey && String(env.FAITHAI_AI_MODEL || "").trim() && Number.isFinite(maxCallUsd) && maxCallUsd > 0 && (providerKind !== "alibaba" || alibabaEndpointAllowed(aiEndpoint) && !/^sk-sp-/i.test(aiKey)));
+  const aiProvider = aiConfigured ? createOpenAiCompatibleProvider({ endpoint: aiEndpoint.href, apiKey: aiKey, model: env.FAITHAI_AI_MODEL, providerKind, fetcher, maxOutputTokens: Number(env.FAITHAI_AI_MAX_OUTPUT_TOKENS || 256) }) : null;
   const returnUrl = httpsUrl(env.FAITHAI_PAYMENT_RETURN_URL);
   const stripeConfigured = Boolean(env.FAITHAI_STRIPE_API_KEY && env.FAITHAI_STRIPE_WEBHOOK_SECRET && returnUrl);
   if (stripeConfigured && enabled(env.FAITHAI_STRIPE_ENABLED)) {
@@ -51,6 +61,7 @@ export function createProviderRuntime(env = {}, { fetcher = fetch, now = () => D
   }
   return {
     aiProvider,
+    aiProviderInfo,
     paymentAdapters,
     paymentWebhookVerifier: stripeConfigured && enabled(env.FAITHAI_STRIPE_ENABLED) ? async (payload, signature) => verifyStripeSignature(payload, signature, env.FAITHAI_STRIPE_WEBHOOK_SECRET, now()) : null,
     paymentEventMapper: stripeConfigured ? stripeRevenueEvent : null,

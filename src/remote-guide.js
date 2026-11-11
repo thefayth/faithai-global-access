@@ -17,8 +17,10 @@ export function canOfferRemoteGuide({ utterance, locale, experience, localResult
 
 export function createRemoteGuideClient({ base = "", fetcher = fetch, sessionKey = ephemeralId() } = {}) {
   let configured = false;
+  let providerLabel = "Online AI provider";
   let pending = null;
   return {
+    get providerLabel() { return providerLabel; },
     cancel() { pending?.abort(); },
     async checkAvailability() {
       configured = false;
@@ -26,6 +28,7 @@ export function createRemoteGuideClient({ base = "", fetcher = fetch, sessionKey
         const response = await fetcher(apiUrl("capabilities", base), { headers: { accept: "application/json" }, cache: "no-store", signal: AbortSignal.timeout(5000) });
         if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) return false;
         const value = await response.json();
+        providerLabel = typeof value.aiProvider?.label === "string" ? value.aiProvider.label.slice(0, 80) : "Online AI provider";
         configured = Boolean(value.providers?.ai && value.readiness?.ai?.enabled && value.readiness?.ai?.configured && (value.liveTerritories?.includes("us") || value.liveTerritories?.includes("global")));
       } catch { /* No configured provider means complete local guidance. */ }
       return configured;

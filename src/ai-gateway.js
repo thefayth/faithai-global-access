@@ -44,7 +44,7 @@ export function createFantasiaAiPacket({ requestId, locale, territory, scene, co
   };
 }
 
-export function createOpenAiCompatibleProvider({ endpoint, apiKey, model = "", fetcher = fetch, maxOutputTokens = 256, systemPrompt = "Return JSON only with intent, confidence, and followUp. Intent must be care, learning, tools, project, support, books, agriculture, aid, challenges, power, or null. Do not return personal fields or make medical, legal, emergency, or eligibility decisions." } = {}) {
+export function createOpenAiCompatibleProvider({ endpoint, apiKey, model = "", providerKind = "openai-compatible", fetcher = fetch, maxOutputTokens = 256, systemPrompt = "Return JSON only with intent, confidence, and followUp. Intent must be care, learning, tools, project, support, books, agriculture, aid, challenges, power, or null. Do not return personal fields or make medical, legal, emergency, or eligibility decisions." } = {}) {
   return {
     configured: Boolean(endpoint && apiKey && model),
     async interpret({ approvedUtterance, locale, territory, scene }) {
@@ -52,11 +52,11 @@ export function createOpenAiCompatibleProvider({ endpoint, apiKey, model = "", f
       const value = text(approvedUtterance);
       if (value.length > 2000) throw new Error("utterance-too-long");
       const outputLimit = Math.max(1, Math.min(512, Math.floor(maxOutputTokens) || 256));
-      const generation = model === "gpt-5.6-luna" ? { max_completion_tokens: outputLimit, reasoning_effort: "none", store: false, service_tier: "default" } : { temperature: 0, max_tokens: outputLimit };
+      const generation = providerKind === "alibaba" ? { temperature: 0.1, max_tokens: outputLimit, enable_thinking: false } : model === "gpt-5.6-luna" ? { max_completion_tokens: outputLimit, reasoning_effort: "none", store: false, service_tier: "default" } : { temperature: 0, max_tokens: outputLimit };
       const response = await fetcher(endpoint, {
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
-        body: JSON.stringify({ model, ...generation, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: value }], metadata: { locale, territory, scene } }),
+        body: JSON.stringify({ model, ...generation, messages: [{ role: "system", content: systemPrompt }, { role: "user", content: value }], ...(providerKind === "alibaba" ? {} : { metadata: { locale, territory, scene } }) }),
         signal: AbortSignal.timeout(10000),
       });
       if (!response.ok) throw new Error(`ai-provider-${response.status}`);

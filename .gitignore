@@ -16,3 +16,6 @@ private/
 output/
 outputs/
 .playwright-cli/
+docs/homepage/*
+!docs/homepage/README.md
+!docs/homepage/*.patch

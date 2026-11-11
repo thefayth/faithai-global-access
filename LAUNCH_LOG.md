@@ -19,3 +19,12 @@
 - Connected Stripe account remains sandbox-only. No payment accepted; payment providers remain off.
 - ExoClick actual-hostname approval is unverified; third-party ads remain off. No new paid service was activated.
 - Faith selected: "Launch with free local guidance; AI stays off." Live AI is intentionally deferred for this release; do not retry billable calls or enable the provider without a new funded-pilot decision.
+
+## 2026-11-10 — Public beta and Alibaba selection
+
+- General and legacy entries are live. After a minified startup regression, rollback was exercised, the session-ID helper repaired, and a bundled-module regression test added. Final VPS suite: 81 passed; three production builds passed.
+- Faith freshly confirmed public BiNet `/help/` only. Its teal English screen was verified at 390px; `/connect/` and `/course/` retain the Coming Soon shield. Remote AI is explicitly denied on the BiNet help API.
+- Correct homepage links verified in browser: FAITHAI (private beta) on thefayth.net; BiNet Help (private beta) on binetusa.org. Concurrent KÉVIN changes were preserved.
+- Both sanitized public repositories are published. Field Kit source recovery and targeted dependency fixes passed 48 tests, build, source scan, and Worker HTTP smoke. Production dependency audit: zero; full toolchain audit still has 20 findings, none critical.
+- Faith requested Alibaba tokens and an email check. Account-specific findings remain in a private, git-ignored receipt. Official Alibaba documentation excludes Token/Coding Plans from custom backends; regular Model Studio support was added with those restricted keys/endpoints rejected.
+- Alibaba is selected server-side, but unconfigured and disabled. No Alibaba inference, purchase, billing change, or unauthorized Token Plan use was performed. Core guidance remains free/local.
