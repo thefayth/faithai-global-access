@@ -13,7 +13,7 @@
 | Signals and referrals | Verified source/territory/expiry and local context matching | Registry not live |
 | Circles and Power Credits | Durable reviewed workflow and delivery receipts | Demo/local contracts only; incomplete |
 | Institute / campaign | Charter, research index, policies, program terms | Existing Drive strategy; publication work pending |
-| Field Kit | Exact source recovered, compared, separately versioned and deployed | Recovered; 48 tests/build/HTTP pass; sanitized source public; native publication in progress |
+| Field Kit | Exact source recovered, compared, separately versioned and deployed | Recovered; 48 tests/build/HTTP pass; sanitized source public; native version9 published |
 | Public repositories | Sanitized source, license, exact release commit | Both faithai-global-access and thefaythai-field-kit public source verified |
 | Drive records | Logs, evidence, operator guide, final status verified by readback | Folder and first work log uploaded |
 | SMS/USSD | Simulator explicitly labeled; stable scene commands | Deliberately deferred live transport |

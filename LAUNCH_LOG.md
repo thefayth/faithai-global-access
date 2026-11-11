@@ -28,3 +28,11 @@
 - Both sanitized public repositories are published. Field Kit source recovery and targeted dependency fixes passed 48 tests, build, source scan, and Worker HTTP smoke. Production dependency audit: zero; full toolchain audit still has 20 findings, none critical.
 - Faith requested Alibaba tokens and an email check. Account-specific findings remain in a private, git-ignored receipt. Official Alibaba documentation excludes Token/Coding Plans from custom backends; regular Model Studio support was added with those restricted keys/endpoints rejected.
 - Alibaba is selected server-side, but unconfigured and disabled. No Alibaba inference, purchase, billing change, or unauthorized Token Plan use was performed. Core guidance remains free/local.
+
+## 2026-11-11 — Final publication receipts
+
+- Field Kit version9 published successfully to its existing public URL, with native source665480713a7509a8cb8efa2e9885cdf7c201e66b and retained DB/VAULT bindings. The supported source helper required repair of its historically nested hosting manifest; only the 85 reviewed public files were pushed after byte-for-byte comparison, with original recovery/history preserved.
+- Public Field Kit source21f916835d320efe4979e8a21fcca3a458fd69da remains a fresh sanitized snapshot, not a disclosure of historical operational source.
+- FAITHAI public runtime source3de6c4fa41b5f9b8bdec181b7bb0731f415b9ebb and all three release manifests read back with matching variant/checksum. Both branded live menus render after the final adapter update.
+- Private Drive completion folder and uploaded document parents/owner-only permissions were verified. Alibaba setup text was read back. Final index and visual receipts are being added without overwriting earlier log snapshots.
+- The temporary loopback web preview service was stopped. Production remains active. Remaining global-service requirements are explicitly open in the final index and completion ledger.
