@@ -1,0 +1,28 @@
+[Unit]
+Description=FAITHAI public API
+After=network-online.target docker.service
+Wants=network-online.target docker.service
+
+[Service]
+Type=simple
+User=faithai
+Group=faithai
+WorkingDirectory=/srv/faithai/current
+EnvironmentFile=/etc/faithai/faithai.env
+ExecStart=/usr/local/bin/node server/api.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/srv/faithai /var/backups/faithai
+
+[Install]
+WantedBy=multi-user.target

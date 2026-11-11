@@ -1,0 +1,15 @@
+[Unit]
+Description=FAITHAI PostgreSQL backup
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=faithai
+Group=faithai
+EnvironmentFile=/etc/faithai/faithai.env
+ExecStart=/opt/faithai/current/deploy/vps/backup-postgres.sh
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/backups/faithai

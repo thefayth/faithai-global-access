@@ -1,0 +1,30 @@
+{
+  "name": "faithai-global-access",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/prepare-sites-build.mjs",
+    "build:host-root": "vite build --mode host-root && node scripts/prepare-sites-build.mjs",
+    "build:binet-help": "vite build --mode binet-help && node scripts/prepare-sites-build.mjs",
+    "preview": "vite preview",
+    "api:dev": "node server/api.mjs",
+    "db:migrate": "node scripts/migrate-postgres.mjs",
+    "packs:sign": "node scripts/sign-content-manifest.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:unit": "node --test tests/faithai-engine.test.mjs tests/walkthrough.test.mjs tests/global-access.test.mjs tests/api.test.mjs",
+    "test:sites": "node --test tests/sites-worker.test.mjs",
+    "test:integrations": "node --test tests/integrations.test.mjs",
+    "test:walkthrough": "node tests/walkthrough.test.mjs",
+    "validate:public-config": "node scripts/validate-public-config.mjs"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "@vitejs/plugin-react": "5.0.4",
+    "pg": "^8.16.3",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "vite": "6.4.2"
+  }
+}

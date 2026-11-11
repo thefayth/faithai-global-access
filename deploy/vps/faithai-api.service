@@ -1,0 +1,27 @@
+[Unit]
+Description=FAITHAI public API
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=faithai
+Group=faithai
+WorkingDirectory=/opt/faithai/current
+EnvironmentFile=/etc/faithai/faithai.env
+ExecStart=/usr/bin/node server/api.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

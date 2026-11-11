@@ -1,0 +1,14 @@
+{
+  "name": "FAITHAI Guided Help",
+  "short_name": "FAITHAI",
+  "description": "A private, low-bandwidth guided ASCII adventure with help books, farm learning, aid routes, safety guidance, and cooperative challenges.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08040d",
+  "theme_color": "#6e21a8",
+  "lang": "en",
+  "dir": "auto",
+  "categories": ["education", "productivity", "utilities"]
+}

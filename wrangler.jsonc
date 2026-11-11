@@ -1,0 +1,42 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "faithai-global",
+  "main": "./cloudflare/worker.js",
+  "compatibility_date": "2026-08-07",
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "run_worker_first": ["/v1/*"],
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "faithai-global",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "./cloudflare/migrations"
+    }
+  ],
+  "r2_buckets": [{ "binding": "PACKS", "bucket_name": "faithai-packs" }],
+  "queues": { "producers": [{ "binding": "OUTBOX", "queue": "faithai-outbox" }] },
+  "vars": {
+    "FAITHAI_ENVIRONMENT": "staging",
+    "FAITHAI_LIVE_TERRITORIES": "global",
+    "FAITHAI_AI_ENABLED": "false",
+    "FAITHAI_ADSENSE_ENABLED": "false",
+    "FAITHAI_EXOCLICK_ENABLED": "false",
+    "FAITHAI_STRIPE_ENABLED": "false",
+    "FAITHAI_PAYSTACK_ENABLED": "false",
+    "FAITHAI_FLUTTERWAVE_ENABLED": "false",
+    "FAITHAI_CONTENT_SYNC_ENABLED": "false",
+    "FAITHAI_EMERGENCY_ENABLED": "true",
+    "FAITHAI_AI_DAILY_USD_CAP": "1",
+    "FAITHAI_AI_MONTHLY_USD_CAP": "25",
+    "FAITHAI_AI_CALLS_PER_SESSION": "3",
+    "FAITHAI_AI_MAX_CHARS": "2000"
+  },
+  "env": {
+    "staging": { "vars": { "FAITHAI_ENVIRONMENT": "staging" } },
+    "production": { "vars": { "FAITHAI_ENVIRONMENT": "production" } }
+  }
+}

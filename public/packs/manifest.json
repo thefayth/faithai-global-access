@@ -1,0 +1,8 @@
+{
+  "format": "faithai.content-manifest.v1",
+  "status": "prototype-unsigned",
+  "generatedAt": "2026-08-06T00:00:00.000Z",
+  "publicKeyJwk": null,
+  "packs": [],
+  "note": "The app rejects this as an installable remote manifest until a governed pilot signs it with scripts/sign-content-manifest.mjs and publishes the public key. Built-in prototype reading cards remain bundled source data."
+}
